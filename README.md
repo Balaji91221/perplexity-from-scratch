@@ -3,7 +3,7 @@
 Build a Perplexity-style answer engine, stage by stage. Free to run end-to-end.
 
 ```
-question → DuckDuckGo search → fetch & extract → prompt build → gpt-oss-120b → cited streaming answer
+question → SearXNG search → fetch & extract → prompt build → gpt-oss-120b → cited streaming answer
 ```
 
 ## Stack (locked)
@@ -12,7 +12,7 @@ question → DuckDuckGo search → fetch & extract → prompt build → gpt-oss-
 |---|---|---|
 | Frontend | Next.js 14 (port 3000) | SSE streaming + React |
 | Backend | FastAPI (port 8000) | Async + SSE trivial |
-| Search | DuckDuckGo (`duckduckgo-search`) | Free, no API key |
+| Search | SearXNG (self-hosted, port 8080) | Free, no API key, multi-engine |
 | LLM | NVIDIA NIM `gpt-oss-120b` | Free build credits |
 | Page extract | `httpx` + `trafilatura` | Concurrent fetch + clean text |
 | DB | Postgres + pgvector (port 5432) | Chat history now, embeddings later |
@@ -29,7 +29,7 @@ question → DuckDuckGo search → fetch & extract → prompt build → gpt-oss-
 
 - [x] **Phase 0** — Scaffolding. Three services boot, web reaches api `/health`.
 - [ ] **Phase 1** — The 5-stage pipeline (`/ask` endpoint, SSE streaming).
-  1. `search_ddg(query)` → list of `{title, url, snippet}`
+  1. `search_web(query, focus)` → list of `{title, url, snippet}` via SearXNG
   2. `fetch_and_extract(urls)` → list of `{url, text}` (parallel httpx + trafilatura)
   3. `build_prompt(query, sources)` → messages with numbered sources, citation rules
   4. `stream_llm(messages)` → async iterator of token deltas
