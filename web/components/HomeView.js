@@ -1,10 +1,23 @@
 // Empty-state landing view: hero + search box + suggestion cards.
 
-import { SUGGESTIONS } from "../lib/constants";
-import { ArrowIcon } from "./icons";
+import { BRAND, SUGGESTIONS } from "../lib/constants";
+import {
+  ArrowIcon,
+  CompareIcon,
+  HistoryIcon,
+  NewsIcon,
+  ScienceIcon,
+} from "./icons";
 import { ModeDropdown, AgentDropdown } from "./dropdowns";
 import { ActiveSkillChip, SkillsAutocomplete } from "./skills";
 import { AttachmentStrip, UploadButton } from "./inputs";
+
+const KIND_ICON = {
+  science: ScienceIcon,
+  compare: CompareIcon,
+  news: NewsIcon,
+  history: HistoryIcon,
+};
 
 export default function HomeView({
   query, setQuery, onSubmit, inputRef,
@@ -13,11 +26,18 @@ export default function HomeView({
   skill, setSkill,
   agentKey, setAgentKey, agents,
 }) {
+  const [titleA, titleB] = BRAND.hero.title;
+
   return (
     <div className="home">
-      <h1 className="hero">
-        Where knowledge <span className="hero-accent">begins</span>.
-      </h1>
+      <div className="brand-glow" aria-hidden="true" />
+
+      <div className="hero-block">
+        <h1 className="hero">
+          {titleA} <span className="hero-accent">{titleB}</span>
+        </h1>
+        <p className="hero-sub">{BRAND.hero.sub}</p>
+      </div>
 
       <AttachmentStrip
         docs={docs}
@@ -58,20 +78,37 @@ export default function HomeView({
         />
       </div>
 
-      <div className="suggestion-cards">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s.cmd}
-            className="suggestion-card"
-            onClick={() => {
-              setQuery(s.text);
-              setTimeout(onSubmit, 0);
-            }}
-          >
-            <span className="suggestion-cmd">/{s.cmd}</span>
-            <span className="suggestion-text">{s.text}</span>
-          </button>
+      <ul className="feature-pills" aria-label="Capabilities">
+        {BRAND.features.map((f) => (
+          <li key={f} className="feature-pill">
+            <span className="feature-dot" aria-hidden="true" />
+            {f}
+          </li>
         ))}
+      </ul>
+
+      <div className="suggestion-cards">
+        {SUGGESTIONS.map((s) => {
+          const Icon = KIND_ICON[s.kind];
+          return (
+            <button
+              key={s.cmd}
+              className="suggestion-card"
+              onClick={() => {
+                setQuery(s.text);
+                setTimeout(onSubmit, 0);
+              }}
+            >
+              <span className="suggestion-head">
+                {Icon && (
+                  <span className="suggestion-icon" aria-hidden="true"><Icon /></span>
+                )}
+                <span className="suggestion-cmd">/{s.cmd}</span>
+              </span>
+              <span className="suggestion-text">{s.text}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

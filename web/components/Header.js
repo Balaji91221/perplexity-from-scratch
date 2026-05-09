@@ -1,7 +1,8 @@
 // Sticky top header — sidebar toggle + logo + focus tabs + new-thread button.
 
+import { BRAND } from "../lib/constants";
 import FocusTabs from "./FocusTabs";
-import { MenuIcon, SparkIcon } from "./icons";
+import { BrandMark, MenuIcon, RobotIcon } from "./icons";
 
 export default function Header({
   hasActivity,
@@ -10,6 +11,8 @@ export default function Header({
   onNewThread,
   focus,
   setFocus,
+  assistantOpen,
+  onToggleAssistant,
 }) {
   return (
     <header className="header">
@@ -22,11 +25,21 @@ export default function Header({
         <MenuIcon />
       </button>
       <button className="logo" onClick={onNewThread} aria-label="Home">
-        <SparkIcon />
-        <span>perplexity-clone</span>
+        <BrandMark size={22} />
+        <span className="logo-name">{BRAND.name}</span>
       </button>
       <FocusTabs focus={focus} setFocus={setFocus} />
       <div className="header-spacer" />
+      <button
+        className={`assistant-toggle ${assistantOpen ? "is-open" : ""}`}
+        onClick={onToggleAssistant}
+        title="Assistant — autonomous crawler"
+        aria-label="Toggle assistant panel"
+        aria-pressed={assistantOpen}
+      >
+        <RobotIcon />
+        <span>Assistant</span>
+      </button>
       {hasActivity && (
         <button className="new-thread" onClick={onNewThread}>
           New thread

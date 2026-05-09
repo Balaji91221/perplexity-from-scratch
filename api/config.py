@@ -39,4 +39,8 @@ FOCUS_PARAMS: dict[str, dict] = {
 }
 
 # --- CORS allowed origins ---
-CORS_ORIGINS: list[str] = ["http://localhost:3001", "http://localhost:3000"]
+CORS_ORIGINS: list[str] = [
+    "http://localhost:13000",
+    "http://localhost:3001",
+    "http://localhost:3000",
+]

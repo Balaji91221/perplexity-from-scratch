@@ -30,12 +30,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { api } from "../lib/api";
 import { DEFAULT_AGENTS } from "../lib/constants";
+import AssistantPanel from "../components/AssistantPanel";
+import Footer from "../components/Footer";
 import FollowUpBar from "../components/FollowUpBar";
 import Header from "../components/Header";
 import HomeView from "../components/HomeView";
 import PdfPanel from "../components/PdfPanel";
 import Sidebar from "../components/Sidebar";
+import Toaster from "../components/Toaster";
 import Turn from "../components/Turn";
+import { toast } from "../lib/toast";
 
 // turn = { question, mode, agent, sources, answer, stage, error, steps, plan, subAgents, phase }
 function newTurn(question, mode, agentKey) {
@@ -51,6 +55,7 @@ function newTurn(question, mode, agentKey) {
     plan: null,         // orchestrator: [{agent, subtask}]
     subAgents: [],      // orchestrator: [{agent, subtask, status, steps:[], answer}]
     phase: null,        // orchestrator: planning | running | synthesizing | done
+    subqueries: [],     // quick mode: rewritten sub-queries
   };
 }
 
@@ -68,6 +73,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [skill, setSkill] = useState(null);            // active /skill (prepends prompt)
   const [pdfView, setPdfView] = useState(null);        // open the PDF panel
   const [agentKey, setAgentKey] = useState("generalist");
@@ -238,6 +244,11 @@ export default function Home() {
         const sources = JSON.parse(data);
         updateLastTurn({ sources, stage: "reading" });
       } catch {}
+    } else if (event === "subqueries") {
+      try {
+        const subqueries = JSON.parse(data);
+        if (Array.isArray(subqueries)) updateLastTurn({ subqueries });
+      } catch {}
     } else if (event === "step") {
       try {
         const s = JSON.parse(data);
@@ -386,7 +397,10 @@ export default function Home() {
       await api(`/threads/${id}`, { method: "DELETE" });
       if (id === threadId) startNewThread();
       refreshThreads();
-    } catch {}
+      toast.success("Thread deleted");
+    } catch {
+      toast.error("Failed to delete thread");
+    }
   }
 
   // ---------- Documents ----------
@@ -410,8 +424,11 @@ export default function Home() {
       const doc = await res.json();
       setDocs((d) => [...d, doc]);
       setAllDocs((d) => [doc, ...d.filter((x) => x.id !== doc.id)]);
+      toast.success(`${doc.filename || "Document"} uploaded`);
     } catch (err) {
-      setUploadError(err.message || String(err));
+      const msg = err.message || String(err);
+      setUploadError(msg);
+      toast.error(`Upload failed: ${msg}`);
     } finally {
       setUploading(false);
     }
@@ -439,7 +456,7 @@ export default function Home() {
   const hasActivity = turns.length > 0;
 
   return (
-    <div className={`app ${sidebarOpen ? "app--sidebar" : ""}`}>
+    <div className={`app ${sidebarOpen ? "app--sidebar" : ""} ${assistantOpen ? "app--assistant" : ""}`}>
       <Sidebar
         open={sidebarOpen}
         threads={threads}
@@ -468,6 +485,8 @@ export default function Home() {
           onNewThread={startNewThread}
           focus={focus}
           setFocus={setFocus}
+          assistantOpen={assistantOpen}
+          onToggleAssistant={() => setAssistantOpen((o) => !o)}
         />
 
         <main className={`main ${hasActivity ? "main--thread" : "main--home"}`}>
@@ -498,6 +517,7 @@ export default function Home() {
               <div ref={bottomRef} />
             </div>
           )}
+          {!hasActivity && <Footer />}
         </main>
 
         {hasActivity && (
@@ -525,6 +545,8 @@ export default function Home() {
       </div>
 
       {pdfView && <PdfPanel view={pdfView} onClose={() => setPdfView(null)} />}
+      <AssistantPanel open={assistantOpen} onClose={() => setAssistantOpen(false)} />
+      <Toaster />
     </div>
   );
 }

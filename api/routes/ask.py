@@ -27,7 +27,8 @@ from rag import (
     doc_belongs_to,
     retrieve_chunks,
 )
-from search import search_web
+from query_rewrite import rewrite_query
+from search import multi_search
 import threads_repo
 
 router = APIRouter()
@@ -174,8 +175,15 @@ async def ask(req: AskRequest, user_id: str = Depends(get_user_id)):
             return
 
         # 2. Plain web search → fetch → answer.
+        #    Rewrite the query into 1-3 focused sub-queries for higher recall.
         try:
-            results = await search_web(req.query, focus=req.focus)
+            subqueries = await rewrite_query(req.query, history)
+        except Exception:
+            subqueries = [req.query]
+        yield {"event": "subqueries", "data": json.dumps(subqueries)}
+
+        try:
+            results = await multi_search(subqueries, focus=req.focus)
         except Exception as e:
             err_msg = f"Search failed: {e}"
             await threads_repo.insert_message(thread_id, "assistant", err_msg)

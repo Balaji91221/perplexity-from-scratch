@@ -3,14 +3,15 @@
 
 import { useMemo, useRef, useState } from "react";
 
+import { BRAND } from "../lib/constants";
 import {
+  BrandMark,
   ChevronLeftIcon,
   ClockIcon,
   DesktopIcon,
   FileIcon,
   PlugIcon,
   PlusIcon,
-  SparkIcon,
   TrashIcon,
 } from "./icons";
 import ThemeToggle from "./ThemeToggle";
@@ -105,8 +106,8 @@ export default function Sidebar({
     <aside className={`sidebar ${open ? "sidebar--open" : ""}`}>
       <div className="sidebar-head">
         <button className="sidebar-logo" onClick={onNewThread}>
-          <SparkIcon />
-          <span>perplexity-clone</span>
+          <BrandMark size={20} />
+          <span>{BRAND.name}</span>
         </button>
         <button className="icon-btn" onClick={onToggle} title="Hide sidebar">
           <ChevronLeftIcon />

@@ -2,9 +2,9 @@ services:
   web:
     build: ./web
     ports:
-      - "3001:3000"
+      - "13000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:18000
     depends_on:
       - api
     volumes:
@@ -15,7 +15,7 @@ services:
   api:
     build: ./api
     ports:
-      - "8000:8000"
+      - "18000:8000"
     environment:
       - NVIDIA_API_KEY=${NVIDIA_API_KEY}
       - DATABASE_URL=postgresql://perplexity:perplexity@db:5432/perplexity
@@ -34,18 +34,18 @@ services:
   browser:
     build: ./browser
     ports:
-      - "8001:8001"
+      - "18001:8001"
     shm_size: "1gb"
 
   searxng:
     image: searxng/searxng:latest
     environment:
-      - BASE_URL=http://localhost:8080/
+      - BASE_URL=http://localhost:18080/
       - INSTANCE_NAME=perplexity-clone-searxng
     volumes:
       - ./searxng:/etc/searxng
     ports:
-      - "8080:8080"
+      - "18080:8080"
 
   db:
     image: ankane/pgvector:latest
@@ -57,7 +57,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "15432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U perplexity"]
       interval: 5s

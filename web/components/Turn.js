@@ -58,6 +58,15 @@ export default function Turn({ turn, isLast, onOpenPdf }) {
         </Section>
       )}
 
+      {!isAgentic && !isOrchestrator && turn.subqueries && turn.subqueries.length > 1 && (
+        <div className="subquery-strip" aria-label="Sub-queries">
+          <span className="subquery-strip__label">Searched</span>
+          {turn.subqueries.map((q, i) => (
+            <span key={i} className="subquery-chip">{q}</span>
+          ))}
+        </div>
+      )}
+
       <Section label="Sources" icon={<SourceIcon />}>
         {turn.sources.length === 0 ? (
           sourcesPending || (isAgentic && turn.stage === "thinking") ? (

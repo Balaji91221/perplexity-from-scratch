@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir --break-system-packages \
     trafilatura==1.12.2 \
     playwright==1.47.0
 
-COPY browser_pool.py extract.py main.py ./
+COPY browser_pool.py extract.py actions.py main.py ./
 
 EXPOSE 8001
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

@@ -4,12 +4,23 @@ import {
   BoltIcon, BeakerIcon, DesktopIcon,
 } from "../components/icons";
 
-// Suggestion cards on the home view.
+// Brand identity — change here to rebrand the whole app.
+export const BRAND = {
+  name: "Lumen",
+  tagline: "an open-source answer engine",
+  hero: {
+    title: ["Where knowledge", "begins."],   // second word gets the gradient accent
+    sub: "Cited answers from the live web — multi-agent, streaming, open-source.",
+  },
+  features: ["Cited sources", "Multi-agent", "Streaming", "Open-source"],
+};
+
+// Suggestion cards on the home view. `kind` drives the small icon shown on each card.
 export const SUGGESTIONS = [
-  { cmd: "explain",   text: "How does CRISPR gene editing work?" },
-  { cmd: "compare",   text: "Compare React, Vue, and Svelte in 2026" },
-  { cmd: "latest",    text: "Latest milestones for the JWST" },
-  { cmd: "summarize", text: "Causes of the 2008 financial crisis" },
+  { cmd: "explain",   kind: "science", text: "How does CRISPR gene editing work?" },
+  { cmd: "compare",   kind: "compare", text: "Compare React, Vue, and Svelte in 2026" },
+  { cmd: "latest",    kind: "news",    text: "Latest milestones for the JWST" },
+  { cmd: "summarize", kind: "history", text: "Causes of the 2008 financial crisis" },
 ];
 
 // Mode dropdown entries.
