@@ -1,6 +1,6 @@
 # Lumen
 
-> An open-source answer engine. Self-hosted, free to run, yours to extend.
+> A self-hosted answer engine with web retrieval, streaming responses, and source citations.
 
 Lumen takes a question, searches the live web, reads the most relevant pages, and streams back a cited answer — like Perplexity, but the whole stack runs on your machine.
 
@@ -9,6 +9,27 @@ question → SearXNG → fetch & extract → prompt build → gpt-oss-120b → c
 ```
 
 ---
+
+## Why this project exists
+
+A useful answer engine needs to show where its answer came from. Lumen makes the retrieval path inspectable: search, fetch, extraction, synthesis, and citations are separate parts of the application. It is designed for developers exploring retrieval and agent workflows in a complete web stack.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  UI[Next.js conversation UI] --> API[FastAPI orchestration]
+  API --> Search[SearXNG web search]
+  API --> Browser[Playwright page rendering]
+  Search --> Evidence[Extracted page evidence]
+  Browser --> Evidence
+  Evidence --> Model[Configured model provider]
+  Model --> Stream[Cited SSE response]
+  Stream --> UI
+  API --> Store[(Postgres and pgvector)]
+```
+
+The UI displays streamed events. The API coordinates retrieval and model calls; Postgres stores the conversation and document state. Browser rendering runs in its own service.
 
 ## Highlights
 
@@ -20,7 +41,7 @@ question → SearXNG → fetch & extract → prompt build → gpt-oss-120b → c
 - **Right-side Assistant panel** — autonomous goal-driven crawler that drives a real browser through a site to find specific things.
 - **Query rewriting** — vague questions get decomposed into sharper sub-queries before search.
 - **MCP servers** — pluggable tools (time, fetch) via the Model Context Protocol.
-- **Free to run** — SearXNG (no API key), NVIDIA's free `gpt-oss-120b` credits, all in Docker.
+- **Self-hosted services** — SearXNG, a browser worker, and storage run through Docker Compose. Model-provider usage depends on your account and current quotas.
 
 ## Stack
 
@@ -37,7 +58,7 @@ question → SearXNG → fetch & extract → prompt build → gpt-oss-120b → c
 
 ## Quick start
 
-1. Get a free NVIDIA API key at [build.nvidia.com](https://build.nvidia.com/) — no card required.
+1. Configure an NVIDIA API key with access to the model used by the backend. Provider pricing and quotas depend on your account.
 2. Drop it into `.env`:
    ```
    NVIDIA_API_KEY=nvapi-...
@@ -94,4 +115,4 @@ perplexity-from-scratch/
 
 ## License
 
-MIT.
+The original project documentation declares MIT. A standalone license file is not present in the current repository tree.
