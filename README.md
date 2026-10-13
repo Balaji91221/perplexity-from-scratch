@@ -2,7 +2,7 @@
 
 > A self-hosted answer engine with web retrieval, streaming responses, and source citations.
 
-Lumen takes a question, searches the live web, reads the most relevant pages, and streams back a cited answer — like Perplexity, but the whole stack runs on your machine.
+Lumen takes a question, searches the live web, reads the most relevant pages, and streams back a cited answer — with application services running locally and chat/embedding inference using NVIDIA APIs.
 
 ```
 question → SearXNG → fetch & extract → prompt build → gpt-oss-120b → cited streaming answer
@@ -33,7 +33,7 @@ The UI displays streamed events. The API coordinates retrieval and model calls; 
 
 ## Highlights
 
-- **Cited streaming answers** — every claim gets a `[N]` pill that links back to the source.
+- **Cited streaming answers** — model-generated `[N]` references are rendered as clickable source citations. The UI does not enforce evidence coverage for every claim.
 - **Multi-agent modes** — Generalist · Researcher · Coder · Analyst · Orchestrator.
 - **Deep research / Computer Use** — the agent takes multiple steps, reads pages, captures screenshots so you can watch it work.
 - **PDF Q&A** — drop a PDF in, ask questions about it, jump straight to the cited page.
